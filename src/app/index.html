@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loomframe</title>
+</head>
+
+<style>
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Material Symbols Rounded';
+  font-style: normal;
+  src: url(MaterialSymbolsRounded[FILL,GRAD,opsz,wght].woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 48px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 20;
+
+}
+
+:root {
+--darkbg: rgb(18,19,20);
+--midbg: rgb(25,26,27);
+--lightbg: rgb(33,34,35);
+--border: rgb(42,43,44);
+
+--left-w: 0px;
+--right-w: 0px;
+--top-h: 0px;
+--bottom-h: 0px;
+}
+
+html, body {
+margin: 0;
+padding: 0;
+height: 100%;
+width: 100%;
+overflow: hidden;
+background: black;
+color: white;
+font-weight: normal;
+font-family: system-ui;
+user-select: none;
+}
+
+.main {
+position: absolute;
+top: var(--top-h);
+bottom: var(--bottom-h);
+left: var(--left-w);
+right: var(--right-w);
+/*overflow-x: scroll;
+overflow-y: scroll;*/
+background: var(--darkbg);
+}
+
+.topbox {
+position: absolute;
+top: 0;
+width: 100%;
+height: var(--top-h);
+background: var(--midbg);
+outline: 1px solid var(--border);
+}
+.bottombox {
+position: absolute;
+bottom: 0;
+width: 100%;
+height: var(--bottom-h);
+background: var(--midbg);
+outline: 1px solid var(--border);
+}
+
+.leftbox {
+position: absolute;
+left: 0;
+top: var(--top-h);
+height: calc(100% - var(--top-h) - var(--bottom-h));
+width: var(--left-w);
+background: var(--midbg);
+outline: 1px solid var(--border);
+}
+.rightbox {
+position: absolute;
+right: 0;
+top: var(--top-h);
+height: calc(100% - var(--top-h) - var(--bottom-h));
+width: var(--right-w);
+background: var(--midbg);
+outline: 1px solid var(--border);
+}
+
+.resizestickx {
+position: absolute;
+height: 100%;
+width: 10px;
+}
+.resizestickx:hover {
+cursor: ew-resize;
+}
+
+.resizesticky {
+position: absolute;
+width: 100%;
+height: 10px;
+}
+.resizesticky:hover {
+cursor: ns-resize;
+}
+
+.sections {
+position: absolute;
+top: 0;
+left: 0;
+display: inline-block;
+height: 100%;
+width: 15%;
+outline: 1px solid var(--border);
+}
+.timeline {
+position: absolute;
+top: 0;
+right: 0;
+display: inline-block;
+height: 100%;
+width: calc(100% - 15%);
+}
+
+.sectionpanel {
+font-size: 0;
+}
+.section {
+position: static;
+display: inline-block;
+font-size: 16px;
+padding: 4px 8px 4px 8px;
+cursor: pointer;
+}
+
+.sectionboxes {
+height: calc(100% - 29px);
+}
+
+.layers {
+height: 100%;
+background: var(--lightbg);
+outline: 1px solid var(--border);
+border-left: 1px solid var(--border);
+}
+
+.color {
+height: 100%;
+background: var(--lightbg);
+outline: 1px solid var(--border);
+}
+
+.addlayer {
+position: absolute;
+top: 0;
+right: 0;
+font-size: 25px;
+width: 28px;
+height: 28px;
+text-align: center;
+line-height: 22px;
+cursor: pointer;
+}
+
+.projectlayers {
+height: 100%;
+overflow-y: scroll;
+scrollbar-width: none;
+}
+
+.layer {
+padding: 2px;
+font-size: 0;
+cursor: pointer;
+}
+.layertype {
+display: inline-block;
+vertical-align: bottom;
+}
+
+.layersettings {
+vertical-align: bottom;
+float: right;
+}
+
+.layername {
+display: inline-block;
+vertical-align: bottom;
+font-size: 15px;
+line-height: 22px;
+width: 10px;
+white-space: nowrap;
+}
+.deletelayer {
+display: inline-block;
+vertical-align: bottom;
+cursor: pointer;
+}
+.editlayer {
+display: inline-block;
+vertical-align: bottom;
+cursor: pointer;
+}
+.layerup {
+display: inline-block;
+vertical-align: bottom;
+cursor: pointer;
+}
+.layerdown {
+display: inline-block;
+vertical-align: bottom;
+cursor: pointer;
+}
+.layervisible {
+display: inline-block;
+vertical-align: bottom;
+cursor: pointer;
+}
+
+.addlayerwin {
+width: 180px;
+padding: 8px;
+background: var(--lightbg);
+outline: 1px solid var(--border);
+border-radius: 5px;
+position: absolute;
+top: -88px;
+left: 10px;
+}
+.inputlayername {
+outline: none;
+background: var(--midbg);
+border: 1px solid var(--border);
+border-radius: 5px;
+padding: 5px;
+width: 115px;
+color: white;
+font-family: system-ui;
+}
+.submitaddlayer {
+position: absolute;
+margin: 3px 7px 3px 7px;
+background: var(--border);
+border: none;
+color: white;
+padding: 3px 10px 3px 10px;
+border-radius: 3px;
+cursor: pointer;
+font-family: system-ui;
+}
+.selectlayertype {
+background: var(--border);
+border: 1px solid var(--border);
+outline: none;
+color: white;
+border-radius: 3px;
+padding: 2px 10px 2px 2px;
+font-family: system-ui;
+vertical-align: middle;
+}
+.inputlayercolor {
+background: var(--border);
+border: none;
+outline: none;
+border-radius: 3px;
+vertical-align: sub;
+margin-top: 5px;
+margin-left: 5px;
+font-family: system-ui;
+}
+.colortip {
+display: inline-block;
+width: 30px;
+margin-left: 5px;
+font-size: 12px;
+line-height: 14px;
+vertical-align: middle;
+}
+
+.hidden {
+display: none;
+}
+
+.tlcontent {
+width: calc(100% - 15px);
+height: 100%;
+}
+.yscrollbar {
+display: inline-block;
+position: absolute;
+right: 0;
+bottom: 0;
+width: 15px;
+height: calc(100% - 29px);
+background: orange;
+}
+.yscrollthumb {
+position: absolute;
+right: 2px;
+top: 0;
+width: 11px;
+height: 10px;
+background: lime;
+}
+</style>
+
+<body>
+
+    <div class="main">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="leftbox">
+        <div class="resizestickx" style="right: -5px"></div>
+        ALOHA
+        <span class="material-symbols-rounded">image</span>
+    </div>
+
+    <div class="rightbox">
+        <div class="resizestickx" style="left: -5px"></div>
+        ALOHA
+    </div>
+
+    <div class="topbox">
+        <div class="resizesticky" style="bottom: -5px"></div>
+        ALOHA
+    </div>
+
+    <div class="bottombox">
+        <div class="resizesticky" style="top: -5px"></div>
+        
+        <div class="sections">
+            <div class="sectionpanel">
+                <div class="section" data-action="opensection" data-id="layers">Layers</div>
+                <div class="section" data-action="opensection" data-id="color">Color</div>
+            </div>
+
+            <div class="sectionboxes">
+                <div class="layers">
+                    <div class="addlayer" data-action="addlayerwin">+</div>
+                    <div class="projectlayers">
+                        
+                    </div>
+                </div>
+                <div class="color">c</div>
+            </div>
+
+            <div class="addlayerwin hidden">
+                <input type="text" class="inputlayername" placeholder="Layer name">
+                <button class="submitaddlayer" data-action="addlayer">Add</button>
+                <select class="selectlayertype">
+                    <option value="vector">Vector</option>
+                    <option value="raster">Raster</option>
+                    <option value="video">Video</option>
+                    <option value="audio">Audio</option>
+                </select>
+                <div class="colortip">Track Color: </div>
+                <input type="color" class="inputlayercolor">
+            </div>
+        </div>
+
+        <div class="timeline">
+            <!--<div class="tlheader">TLHEADER</div>-->
+            <div class="tlcontent"><canvas id="timeline"></canvas></div>
+            <div class="yscrollbar">
+                <div class="yscrollthumb"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./loomframe.js"></script>
+
+</body>
+</html>

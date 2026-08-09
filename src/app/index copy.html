@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dela+Gothic+One&family=Geologica:wght@100..900&family=Great+Vibes&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Oswald:wght@200..700&family=Press+Start+2P&family=Reggae+One&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik+Scribble&family=Ruslan+Display&family=Seymour+One&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<title>Loomframe</title>
+</head>
+
+<style>
+:root {
+--deep: #1e1e1e;
+--back: #232323;
+--box: #2a2a2a;
+--elm: #343434;
+--bright: #3d3d3d;
+}
+* {
+outline: 2px solid reda;
+}
+html, body {
+margin: 0;
+padding: 0;
+font-family: system-ui;
+height: 100%;
+width: 100%;
+overflow: hiddena;
+background: black;
+color: white;
+user-select: none;
+}
+
+
+*::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--back);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--elm);
+  border-radius: 10px;
+  border: 3px solid var(--back);
+}
+
+.deepblock { background: var(--deep); }
+.backblock { background: var(--back); }
+.boxblock { background: var(--box); }
+.elmblock { background: var(--elm); }
+.brightblock { background: var(--bright); }
+
+.deephover:hover { background: var(--deep); }
+.backhover:hover { background: var(--back); }
+.boxhover:hover { background: var(--box); }
+.elmhover:hover { background: var(--elm); }
+.brighthover:hover { background: var(--bright); }
+
+.topline { box-shadow: 0 -2px 0 var(--elm); }
+.leftline { box-shadow: -2px 0 0 var(--elm); }
+.rightline { box-shadow: 2px 0 0 var(--elm); }
+.bottomline { box-shadow: 0 2px 0 var(--elm); }
+
+.bordercolor { border: 1px solid var(--bright); }
+.outlinecolor { outline: 1px solid var(--bright); }
+
+
+.topbox {
+position: absolute;
+width: 100%;
+top: 0;
+z-index: 3;
+/*background: rgba(255, 0, 0, 0.635);*/
+}
+.leftbox {
+position: absolute;
+height: 100%;
+left: 0;
+z-index: 2;
+/*background: rgba(0, 0, 255, 0.635);*/
+}
+.rightbox {
+position: absolute;
+height: 100%;
+right: 0;
+z-index: 2;
+/*background: rgba(255, 251, 0, 0.635);*/
+}
+.bottombox {
+position: absolute;
+width: 100%;
+bottom: 0;
+z-index: 3;
+/*background: rgba(0, 255, 21, 0.635);*/
+font-size: 0;
+}
+
+.menubar {
+width: 100%;
+height: 20px;
+font-size: 0;
+}
+.toolbar {
+width: 100%;
+margin-top: 2px;
+height: 33px;
+font-size: 0;
+}
+
+.toolpanel {
+position: relative;
+width: 100px;
+height: calc(100% - 259px);
+top: 57px;
+font-size: 0;
+}
+
+.inspector {
+position: relative;
+width: 300px;
+height: calc(100% - 259px);
+top: 57px;
+}
+
+.toolsections {
+display: inline-block;
+vertical-align: bottom;
+width: 300px;
+height: 200px;
+font-size: 16px;
+}
+.timeline {
+display: inline-block;
+width: calc(100% - 302px);
+height: 200px;
+margin-left: 2px;
+font-size: 16px;
+}
+
+.mainbox {
+position: absolute;
+width: calc(100% - 404px);
+height: calc(100% - 259px);
+top: 57px;
+left: 102px;
+overflow: scroll;
+z-index: 5;
+}
+
+
+
+.menubox {
+position: absolute;
+z-index: 10;
+}
+.menubtn {
+display: inline-block;
+vertical-align: top;
+font-size: 15px;
+font-weight: 500;
+padding: 0px 8px 0px 8px;
+cursor: pointer;
+position: relative;
+}
+.menusection {
+display: none;
+position: absolute;
+left: 5px;
+top: 27px;
+box-shadow: 2px 2px 5px 1px #00000038;
+border-radius: 5px;
+overflow: hidden;
+z-index: 10;
+}
+.menuitem {
+font-size: 14px;
+font-weight: 400;
+min-width: 150px;
+padding: 4px 10px 4px 20px;
+}
+
+.toolbarbtn {
+display: inline-block;
+width: 21px;
+height: 21px;
+padding: 2px;
+text-align: center;
+font-size: 15px;
+border-radius: 5px;
+margin-top: 3px;
+margin-left: 4px;
+box-shadow: 0 0 2px 1px #00000040;
+cursor: pointer;
+}
+.toolbarline {
+display: inline-block;
+vertical-align: top;
+width: 2px;
+height: 20px;
+margin-top: 7px;
+margin-left: 4px;
+}
+
+.toolslabel {
+display: block;
+text-align: center;
+font-weight: 500;
+font-size: 15px;
+padding: 4px;
+}
+.toolbox {
+padding: 4px;
+}
+.toolbtn {
+display: inline-block;
+width: 28px;
+height: 28px;
+padding: 5px;
+text-align: center;
+font-size: 19px;
+border-radius: 5px;
+margin-top: 5px;
+margin-left: 5px;
+box-shadow: 0 0 2px 1px #00000030;
+cursor: pointer;
+}
+
+.projectlayers {
+overflow-y: scroll;
+width: 300px;
+height: 172px;
+}
+.createlayer {
+position: absolute;
+font-weight: 500;
+font-size: 25px;
+margin-top: -28px;
+margin-left: 272px;
+width: 28px;
+height: 28px;
+text-align: center;
+line-height: 22px;
+cursor: pointer;
+}
+.layercreator {
+display: none;
+position: absolute;
+width: 268px;
+height: 30px;
+padding: 8px;
+border-radius: 5px;
+margin-bottom: 210px;
+margin-left: 10px;
+bottom: 0;
+z-index: 8;
+box-shadow: 0 0 10px 1px #00000040;
+}
+
+.lselsection {
+font-size: 0;
+}
+.iselsection {
+font-size: 0;
+}
+.lssitem {
+display: inline-block;
+font-weight: 500;
+font-size: 15px;
+padding: 4px 12px 4px 12px;
+cursor: pointer;
+}
+.issitem {
+display: inline-block;
+font-weight: 500;
+font-size: 15px;
+padding: 4px 12px 4px 12px;
+cursor: pointer;
+}
+
+/*
+backblock -> button element:
+background:         deepX, backX, box, elmX, brightX
+border-outline:     deep, backX, boxX, elm, bright
+box-shadow:         yes, no, 30-40
+*/
+</style>
+
+<body onclick="lf.globalclick()">
+
+<div class="topbox bottomline">
+    <div class="menubar boxblock bottomline">
+        <!-- menubox buttons place (parent is absolute z-index 3 so moved) -->
+    </div>
+
+    <div class="toolbar backblock">
+        <div class="toolbarbtn boxblock bordercolor elmhover">N</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">S</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">O</div>
+        <div class="toolbarline elmblock"></div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">Ud</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">Rd</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">Ct</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">C</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">P</div>
+        <div class="toolbarbtn boxblock bordercolor elmhover">D</div>
+    </div>
+</div>
+
+<div class="menubox">
+<div class="menubtn elmhover" onclick="lf.openmenu('file')" onmouseover="lf.switchmenu('file')">File
+    <div class="menusection filemenu boxblock bordercolor">
+        <div class="menuitem elmhover">New</div>
+        <div class="menuitem elmhover">Save</div>
+        <div class="menuitem elmhover">Open</div>
+    </div>
+</div>
+<div class="menubtn elmhover" onclick="lf.openmenu('edit')" onmouseover="lf.switchmenu('edit')">Edit
+    <div class="menusection editmenu boxblock bordercolor">
+        <div class="menuitem elmhover">Undo</div>
+        <div class="menuitem elmhover">Redo</div>
+        <div class="menuitem elmhover">Cut</div>
+        <div class="menuitem elmhover">Copy</div>
+        <div class="menuitem elmhover">Paste</div>
+        <div class="menuitem elmhover">Duplicate</div>
+    </div>
+</div>
+<div class="menubtn elmhover" onclick="lf.openmenu('view')" onmouseover="lf.switchmenu('view')">View
+    <div class="menusection viewmenu boxblock bordercolor">
+        <div class="menuitem elmhover">View</div>
+    </div>
+</div>
+<div class="menubtn elmhover" onclick="lf.openmenu('tools')" onmouseover="lf.switchmenu('tools')">Tools
+    <div class="menusection toolsmenu boxblock bordercolor">
+        <div class="menuitem elmhover">Tools</div>
+    </div>
+</div>
+<div class="menubtn elmhover" onclick="lf.openmenu('window')" onmouseover="lf.switchmenu('window')">Window
+    <div class="menusection windowmenu boxblock bordercolor">
+        <div class="menuitem elmhover">Window</div>
+    </div>
+</div>
+<div class="menubtn elmhover" onclick="lf.openmenu('help')" onmouseover="lf.switchmenu('help')">Help
+    <div class="menusection helpmenu boxblock bordercolor">
+        <div class="menuitem elmhover">Help</div>
+    </div>
+</div>
+</div>
+
+<div class="leftbox backblock rightline">
+    <div class="toolpanel">
+        <div class="toolslabel boxblock">Tools</div>
+        <div class="toolbox">
+            <div class="toolbtn boxblock elmhover">A</div>
+            <div class="toolbtn boxblock elmhover">B</div>
+            <div class="toolbtn boxblock elmhover">C</div>
+            <div class="toolbtn boxblock elmhover">D</div>
+            <div class="toolbtn boxblock elmhover">E</div>
+            <div class="toolbtn boxblock elmhover">F</div>
+            <div class="toolbtn boxblock elmhover">G</div>
+            <div class="toolbtn boxblock elmhover">H</div>
+            <div class="toolbtn boxblock elmhover">I</div>
+            <div class="toolbtn boxblock elmhover">J</div>
+            <div class="toolbtn boxblock elmhover">K</div>
+            <div class="toolbtn boxblock elmhover">L</div>
+            <div class="toolbtn boxblock elmhover">M</div>
+            <div class="toolbtn boxblock elmhover">N</div>
+            <div class="toolbtn boxblock elmhover">O</div>
+            <div class="toolbtn boxblock elmhover">P</div>
+            <div class="toolbtn boxblock elmhover">Q</div>
+            <div class="toolbtn boxblock elmhover">R</div>
+        </div>
+    </div>
+</div>
+
+<div class="rightbox backblock leftline">
+    <div class="inspector">
+        <div class="iselsection">
+            <div class="issitem projectitem boxblock" onclick="lf.ssui('i', 'project')">Project</div>
+            <div class="issitem cameraitem" onclick="lf.ssui('i', 'camera')">Camera</div>
+            <div class="issitem objectitem" onclick="lf.ssui('i', 'object')">Object</div>
+        </div>
+
+        <div class="iss project boxblock">Project</div>
+
+        <div class="iss camera boxblock" style="display: none;">Camera</div>
+
+        <div class="iss object boxblock" style="display: none;">Object</div>
+    </div>
+</div>
+
+<div class="bottombox topline">
+    <div class="toolsections backblock rightline">
+        <div class="lselsection">
+            <div class="lssitem layersitem boxblock" onclick="lf.ssui('l', 'layers')">Layers</div>
+            <div class="lssitem coloritem" onclick="lf.ssui('l', 'color')">Color</div>
+        </div>
+
+        <div class="lss layers boxblock">
+            <div class="createlayer" onclick="lf.lcuitoggle()">+</div>
+            <div class="projectlayers">Layers</div>
+        </div>
+
+        <div class="lss color boxblock" style="display: none;">Color</div>
+    </div>
+
+    <div class="timeline deepblock">
+        <div class="tlsettings">tlsettings</div>
+        <canvas class="tlcontent" id="tlc"></canvas>
+    </div>
+</div>
+
+<div class="layercreator boxblock bordercolor"></div>
+
+<div class="mainbox deepblock">
+</div>
+
+</body>
+
+<script>
+
+class loomframe {
+    constructor() {
+        //main project data
+        this.project = {
+            width: 1280,
+            height: 720,
+            fps: 24,
+            thislayer: 0,
+            thisframe: 0,
+            editor: {
+                fieldwidth: 3000,
+                fieldheight: 3000
+            },
+            camera: {
+                x: 0,
+                y: 0,
+                /*width,
+                height,
+                scalex,
+                scaley,
+                zoom,
+                rotate*/
+            },
+            layers: [
+                {
+                    name: 'Слой 1',
+                    type: 'vector',
+                    frames: [
+                        {
+                            objects: [
+                                {type: 'path', points: []}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+    }
+
+    //UI (dom)
+    lcuitoggle() {
+        $('.layercreator').fadeToggle(100);
+    }
+
+    ssui(group, item) { //select section function
+        $(`.${group}ssitem`).removeClass('boxblock');
+        $(`.${group}ss`).hide();
+
+        $(`.${group}ssitem.${item}item`).addClass('boxblock');
+        $(`.${group}ss.${item}`).show();
+    }
+
+    globalclick() {
+        $('.menusection').hide();
+    }
+
+    openmenu(menu) {
+        if($(`.${menu}menu`).css('display') == 'none') {
+            setTimeout(() => {
+                $(`.${menu}menu`).show();
+            }, 1);
+        }
+    }
+
+    switchmenu(menu) {
+        $('.menusection').each(function() {
+            if($(this).css('display') == 'block') {
+                $('.menusection').hide();
+                $(`.${menu}menu`).show();
+            }
+        });
+    }
+}
+
+//setup, start, launch, main
+
+let lf = new loomframe(); //editor, system, project, loomframe, lf, LF
+
+//project, camera, object, scene, layer, frame, editor
+
+</script>
+
+
+</html>

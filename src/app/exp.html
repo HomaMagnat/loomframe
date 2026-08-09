@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dela+Gothic+One&family=Geologica:wght@100..900&family=Great+Vibes&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Oswald:wght@200..700&family=Press+Start+2P&family=Reggae+One&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik+Scribble&family=Ruslan+Display&family=Seymour+One&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<title>exp</title>
+</head>
+
+<style>
+* {
+outline: 2px solid red;
+}
+html, body {
+margin: 0;
+padding: 0;
+font-family: system-ui;
+height: 100%;
+width: 100%;
+overflow: hidden;
+background: white;
+color: black;
+user-select: none;
+}
+</style>
+
+<body>
+
+<canvas style="border: 2px solid black; margin-left: 100px;" id="exp"></canvas>
+
+</body>
+
+<script>
+
+class exp {
+    constructor() {
+        //main project data
+        this.project = {
+            width: 800,
+            height: 600,
+            thislayer: 0,
+            thistool: 'pen',
+            layers: [
+                {
+                    type: 'vector',
+                    objects: []
+                }
+            ]
+        };
+
+        //editor system data
+        this.canvas = document.getElementById('exp');
+        this.ctx = this.canvas.getContext('2d');
+
+        //temp data
+        this.isdown = false;
+        this.mousepos = {};
+
+        this.currentobject = null;
+        this.selectedobject = null;
+
+        //bind outer methods
+        this.mousedown = this.mousedown.bind(this);
+        this.mouseup = this.mouseup.bind(this);
+        this.mousemove = this.mousemove.bind(this);
+        this.render = this.render.bind(this);
+
+        //global editor events
+        this.canvas.addEventListener('mousedown', this.mousedown);
+        document.addEventListener('mouseup', this.mouseup);
+        document.addEventListener('mousemove', this.mousemove);
+
+        //set up project props
+        this.canvas.width = this.project.width;
+        this.canvas.height = this.project.height;
+    }
+
+    mousedown(e) {
+        this.isdown = true;
+        
+        if(this.project.thistool == 'pen') {
+            this.currentobject = {
+                type: 'path',
+                points: [],
+            };
+        }
+
+        if(this.project.thistool == 'select') {
+            this.selectedobject = null;
+
+            this.project.layers[this.project.thislayer].objects.forEach((obj, oi) => {
+                obj.points.forEach((point, pi) => {
+                    if(this.mousepos.x-3 < point.x-3 + 6 &&
+                    this.mousepos.x-3 + 6 > point.x-3 &&
+                    this.mousepos.y-3 < point.y-3 + 6 &&
+                    this.mousepos.y-3 + 6 > point.y-3) {
+                        this.selectedobject = point;
+                        this.selectedobject.type = 'point';
+                        this.selectedobject.oi = oi;
+                        this.selectedobject.pi = pi;
+                    }
+                    if(this.mousepos.x-3 < point.h1x-3 + 6 &&
+                    this.mousepos.x-3 + 6 > point.h1x-3 &&
+                    this.mousepos.y-3 < point.h1y-3 + 6 &&
+                    this.mousepos.y-3 + 6 > point.h1y-3) {
+                        this.selectedobject = point;
+                        this.selectedobject.type = 'h1';
+                        this.selectedobject.oi = oi;
+                        this.selectedobject.pi = pi;
+                    }
+                    if(this.mousepos.x-3 < point.h2x-3 + 6 &&
+                    this.mousepos.x-3 + 6 > point.h2x-3 &&
+                    this.mousepos.y-3 < point.h2y-3 + 6 &&
+                    this.mousepos.y-3 + 6 > point.h2y-3) {
+                        this.selectedobject = point;
+                        this.selectedobject.type = 'h2';
+                        this.selectedobject.oi = oi;
+                        this.selectedobject.pi = pi;
+                    }
+                });
+            });
+        }
+    }
+
+    mouseup() {
+        this.isdown = false;
+
+        if(this.project.thistool == 'pen') {
+            if(this.currentobject != null) {
+                if(this.currentobject.points.length > 0) {
+                    this.project.layers[this.project.thislayer].objects.push(this.currentobject);
+                }
+                this.currentobject = null;
+            }
+        }
+    }
+
+    mousemove(e) {
+        let co = $(this.canvas).offset();
+        let x = e.clientX - co.left;
+        let y = e.clientY - co.top;
+
+        this.mousepos = {x, y};
+
+        if(this.isdown == true) {
+            if(this.project.thistool == 'pen') {
+                this.currentobject.points.push({x, y, h1x: x, h1y: y, h2x: x, h2y: y});
+            }
+            if(this.project.thistool == 'select') {
+                if(this.selectedobject != null) {
+                    if(this.selectedobject.type == 'point') {
+                        let dx = x - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].x;
+                        let dy = y - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].y;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].x = x;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].y = y;
+
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1x += dx;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1y += dy;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2x += dx;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2y += dy;
+                    }
+                    if(this.selectedobject.type == 'h1') {
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1x = x;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1y = y;
+
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2x = 2 * this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].x - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1x;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2y = 2 * this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].y - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1y;
+                    }
+                    if(this.selectedobject.type == 'h2') {
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2x = x;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2y = y;
+
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1x = 2 * this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].x - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2x;
+                        this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h1y = 2 * this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].y - this.project.layers[this.project.thislayer].objects[this.selectedobject.oi].points[this.selectedobject.pi].h2y;
+                    }
+                }
+            }
+        }
+    }
+
+    render() {
+        this.ctx.clearRect(0, 0, this.project.width, this.project.height);
+
+        this.project.layers[this.project.thislayer].objects.forEach(obj => {
+            if(obj.type == 'path') {
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.lineWidth = 5;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+
+                this.ctx.beginPath();
+                
+                this.ctx.moveTo(obj.points[0].x, obj.points[0].y);
+
+                for(let i = 1; i < obj.points.length; i++) {
+                    let prev = obj.points[i-1];
+                    let point = obj.points[i];
+
+                    let cp1x = prev.x + prev.h2x;
+                    let cp1y = prev.y + prev.h2y;
+                    let cp2x = point.x + point.h1x;
+                    let cp2y = point.y + point.h1y;
+
+                    this.ctx.bezierCurveTo(prev.h2x, prev.h2y, point.h1x, point.h1y, point.x, point.y);
+                }
+
+                this.ctx.stroke();
+
+                
+                this.ctx.lineWidth = 2;
+                obj.points.forEach((point, i) => {
+                    this.ctx.strokeStyle = 'blue';
+                    this.ctx.strokeRect(point.x-2.5, point.y-2.5, 5, 5);
+                    this.ctx.strokeStyle = 'orange';
+                    this.ctx.strokeRect(point.h1x-2.5, point.h1y-2.5, 5, 5);
+                    this.ctx.strokeStyle = 'lime';
+                    this.ctx.strokeRect(point.h2x-2.5, point.h2y-2.5, 5, 5);
+                });
+            }
+        });
+
+        if(this.currentobject != null) {
+            if(this.currentobject.type == 'path') {
+                this.ctx.strokeStyle = '#ff0000';
+                this.ctx.lineWidth = 10;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+
+                this.ctx.beginPath();
+                this.currentobject.points.forEach((point, i) => {
+                    if (i === 0) {
+                        this.ctx.moveTo(point.x, point.y);
+                    } else {
+                        this.ctx.lineTo(point.x, point.y);
+                    }
+                });
+
+                this.ctx.stroke();
+            }
+        }
+
+        if(this.selectedobject != null) {
+            this.ctx.strokeStyle = 'red';
+            this.ctx.lineWidth = 2;
+            if(this.selectedobject.type == 'point') {
+                this.ctx.strokeRect(this.selectedobject.x-2.5, this.selectedobject.y-2.5, 5, 5);
+            }
+            if(this.selectedobject.type == 'h1') {
+                this.ctx.strokeRect(this.selectedobject.h1x-2.5, this.selectedobject.h1y-2.5, 5, 5);
+            }
+            if(this.selectedobject.type == 'h2') {
+                this.ctx.strokeRect(this.selectedobject.h2x-2.5, this.selectedobject.h2y-2.5, 5, 5);
+            }
+        }
+        
+        requestAnimationFrame(this.render);
+    }
+}
+
+let v = new exp();
+v.render();
+
+function isCursorOnPoint(cursorX, cursorY, pointX, pointY, objX, objY, objScaleX, objScaleY, objRotation, hitRadius = 5) {
+  // 1. Переводим точку в глобальные координаты
+  const rad = objRotation * Math.PI / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  
+  // Трансформированная позиция точки
+  const transformedX = objX + (pointX * cos - pointY * sin) * objScaleX;
+  const transformedY = objY + (pointX * sin + pointY * cos) * objScaleY;
+  
+  // 2. Проверяем расстояние до курсора
+  const distance = Math.sqrt(
+    (cursorX - transformedX) ** 2 + 
+    (cursorY - transformedY) ** 2
+  );
+  
+  return distance <= hitRadius;
+}
+
+</script>
+
+
+</html>
