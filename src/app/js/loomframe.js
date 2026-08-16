@@ -1,5 +1,6 @@
 import { UI } from './ui/ui.js';
 import { Renderer } from './render/renderer.js';
+import { History } from './history.js';
 
 export class Loomframe {
     constructor() {
@@ -60,6 +61,7 @@ export class Loomframe {
 
         this.ui = new UI(this);
         this.renderer = new Renderer(this);
+        this.history = new History();
 
         this.playhead = 1;
         this.endhead = 1;
@@ -83,7 +85,7 @@ export class Loomframe {
 
         let targetindex = this.project.layers.length;
 
-        this.execute({
+        this.history.execute({
             type: 'addlayer',
             do: () => {
                 this.project.layers.push(newlayer);
