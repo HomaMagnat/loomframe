@@ -1,5 +1,5 @@
-import { UI } from './ui.js';
-import { Renderer } from './renderer.js';
+import { UI } from './ui/ui.js';
+import { Renderer } from './render/renderer.js';
 
 export class Loomframe {
     constructor() {
@@ -8,8 +8,6 @@ export class Loomframe {
             height: 1080,
             fps: 24,
             editor: {
-                fieldwidth: 1,
-                fieldheight: 1,
                 x: 0,
                 y: 0,
                 zoom: 100,
@@ -73,7 +71,7 @@ export class Loomframe {
     }
 
     addlayer(name, type, color) {
-        this.project.layers.push({
+        const newlayer = {
             name: name,
             type: type,
             color: color,
@@ -81,11 +79,23 @@ export class Loomframe {
             opacity: 100,
             blendmode: 'normal',
             frames: {}
+        };
+
+        let targetindex = this.project.layers.length;
+
+        this.execute({
+            type: 'addlayer',
+            do: () => {
+                this.project.layers.push(newlayer);
+                this.setlayer(targetindex);
+                this.ui.renderlayers();
+            },
+            undo: () => {
+                this.project.layers.splice(targetindex, 1); 
+                this.setlayer(Math.max(0, targetindex - 1));
+                this.ui.renderlayers();
+            }
         });
-
-        this.setlayer(this.project.layers.length - 1);
-
-        this.ui.renderlayers();
     }
 
     setlayer(layerid) {
